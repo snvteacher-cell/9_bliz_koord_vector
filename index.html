@@ -1,0 +1,287 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Бліц: координати вектора</title>
+<meta name="author" content="Сидорчук Н.В.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600;700;800&display=swap">
+<style>
+/* Один стовпчик-«зошит»: питання по одному, прогрес угорі, малюнок над варіантами */
+:root{
+  --bg:#eef2f6; --card:#ffffff; --ink:#1b2430; --muted:#5d6b7a; --line:#c9d3de;
+  --acc:#2457b3; --acc-soft:#e3ebf9; --ok:#1d7a4c; --ok-soft:#e1f3e9; --bad:#c23b2e; --bad-soft:#fbe6e3;
+  --fig:#f5f8fc; --m1:#c23b2e; --m2:#d9771c; --m3:#1d7a4c;
+  --font:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --math:Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a22; --card:#1d2530; --ink:#e7edf4; --muted:#9aa8b8; --line:#33404f;
+  --acc:#7ea6f0; --acc-soft:#22324d; --ok:#5cc58f; --ok-soft:#183427; --bad:#f07a6c; --bad-soft:#3b1f1c;
+  --fig:#18202a; --m1:#f07a6c; --m2:#f0a35c; --m3:#5cc58f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a22; --card:#1d2530; --ink:#e7edf4; --muted:#9aa8b8; --line:#33404f;
+  --acc:#7ea6f0; --acc-soft:#22324d; --ok:#5cc58f; --ok-soft:#183427; --bad:#f07a6c; --bad-soft:#3b1f1c;
+  --fig:#18202a; --m1:#f07a6c; --m2:#f0a35c; --m3:#5cc58f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{margin:0;font-size:clamp(26px,5vw,34px);font-weight:800;text-wrap:balance}
+.bar{display:flex;gap:4px}
+.bar span{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.bar span.ok{background:var(--ok)}.bar span.bad{background:var(--bad)}.bar span.cur{background:var(--acc)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.qn{font-size:14px;color:var(--muted);font-weight:600}
+.qt{font-size:21px;font-weight:600;text-wrap:balance}
+.v{font-family:var(--math);font-style:italic}
+.fig{display:flex;justify-content:center;background:var(--fig);border-radius:12px;padding:8px}
+.fig svg{max-width:100%;height:auto}
+.opts{display:grid;gap:10px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opt{font:inherit;font-size:18px;text-align:left;padding:12px 16px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:center}
+.opt:hover{border-color:var(--acc)}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.opt.sel{border-color:var(--acc);background:var(--acc-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt .box{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;font-size:15px}
+.opt.sel .box{border-color:var(--acc);background:var(--acc);color:var(--card)}
+.calc{display:flex;flex-direction:column;gap:12px;font-size:19px}
+.calc .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+input.num{font:inherit;font-size:20px;font-weight:700;width:96px;padding:6px 10px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--acc);text-align:center}
+select{font:inherit;font-size:18px;font-weight:700;color:var(--acc);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px 8px;max-width:100%}
+select.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+select.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+select:disabled{opacity:1}
+input.num.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+input.num.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.fb{border-radius:12px;padding:12px 16px;font-size:17px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb b{display:block;margin-bottom:2px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;font-size:18px;padding:12px 22px;border-radius:12px;border:none;background:var(--acc);color:var(--card);cursor:pointer}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--acc);border:2px solid var(--acc)}
+.result{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.big{font-size:56px;font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums;line-height:1}
+.grade{font-size:20px;font-weight:600}
+.review{text-align:left;width:100%;display:flex;flex-direction:column;gap:8px}
+.review div{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:0 10px 10px 0;font-size:16px}
+.review div i{color:var(--muted);font-style:normal}
+.hint{font-size:14px;color:var(--muted)}
+@media (max-width:480px){.opts.two{grid-template-columns:1fr}.q{padding:16px}.qt{font-size:19px}}
+@media (prefers-reduced-motion:no-preference){.q{animation:in .25s ease}@keyframes in{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}}
+</style><style>
+.vc{display:inline-block;position:relative;padding-top:.36em;line-height:1;font-family:var(--math);font-style:italic;font-size:1.06em;margin:0 .04em;white-space:nowrap}
+.vc::before{content:"";position:absolute;left:.06em;right:.16em;top:.14em;border-top:.085em solid currentColor}
+.vc::after{content:"";position:absolute;right:.02em;top:calc(.14em - .135em + .04em);border-left:.28em solid currentColor;border-top:.135em solid transparent;border-bottom:.135em solid transparent}
+.m{white-space:nowrap}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--acc);background:var(--acc-soft);border-radius:10px;padding:4px 12px;font-size:16px}
+.topics{width:100%;display:flex;flex-direction:column;gap:8px;text-align:left}
+.tp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:16px}
+.tp .meter{grid-column:1 / -1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.tp .meter span{display:block;height:100%;background:var(--ok)}
+.tp .meter span.mid{background:var(--m2)}.tp .meter span.low{background:var(--bad)}
+.tp b{font-variant-numeric:tabular-nums}
+</style>
+
+<style>
+.rt{display:inline-block;position:relative;padding-left:.72em;white-space:nowrap;vertical-align:baseline}.rt>span{display:inline-block;border-top:max(1.3px,.07em) solid currentColor;padding:.08em .12em 0 .1em;line-height:1.1}.rt::before{content:"";position:absolute;left:0;top:0;bottom:-.12em;width:.76em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 20' preserveAspectRatio='none'%3E%3Cpath d='M0.5 11.5 L2.6 10.4 L5.2 19.2 L9.8 0.6' fill='none' stroke='%23000' stroke-width='1.3' vector-effect='non-scaling-stroke' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 20' preserveAspectRatio='none'%3E%3Cpath d='M0.5 11.5 L2.6 10.4 L5.2 19.2 L9.8 0.6' fill='none' stroke='%23000' stroke-width='1.3' vector-effect='non-scaling-stroke' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%}
+.who{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px}
+.who label{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:600;color:var(--muted)}
+.who input{font:inherit;font-size:18px;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.who input.wrong{border-color:var(--bad)}
+.send{width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.send .st{font-weight:600;font-size:16px}.send .st.ok{color:var(--ok)}.send .st.wait{color:var(--m2)}
+.copy{text-align:center;font-size:13px;color:var(--muted);margin-top:8px}
+@media (max-width:480px){.who{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="top"><div class="eyebrow">Геометрія 9 · § 7 · Бліц</div><div class="timer" id="timer">0:00</div></div>
+  <h1>Координати вектора: бліц</h1>
+  <div class="hint">15 коротких запитань: координати вектора, модуль, рівні вектори, початок і кінець вектора. Відповідай швидко, обчислюй усно. Запитання й малюнки щоразу нові.</div>
+</header>
+<div class="bar" id="bar"></div>
+<div id="main"></div>
+<div class="copy">© Сидорчук Н.В., 2026</div>
+</div>
+
+<script>
+/* ---------- пошта вчителя ----------
+   Результат кожного учня автоматично приходить листом на цю адресу (сервіс FormSubmit, безкоштовно, без реєстрації).
+   Перший раз FormSubmit надішле вчителю лист «Action Required: Activate FormSubmit» — у ньому треба один раз натиснути «Activate Form».
+   Поки форму не активовано, результати чекають у телефоні учня й надішлються, коли учень відкриє бліц ще раз. */
+const EMAIL='snv.teacher@gmail.com';
+const WORK='Бліц «Координати вектора» (§ 7)';
+
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const V=s=>`<span class="vc">${s}</span>`, I=s=>`<span class="v">${s}</span>`, M=s=>`<span class="m">${s}</span>`;
+const rt=s=>`<span class="rt"><span>${s}</span></span>`;
+const AB=s=>M(`|${V(s)}|`);
+const nf=x=>String(x).replace('-','−'), pn=x=>x<0?`(${nf(x)})`:String(x);
+const cs=p=>`${nf(p[0])}; ${nf(p[1])}`;
+const VC=(n,p)=>M(`${V(n)}(${cs(p)})`), PT=(n,p)=>M(`${I(n)}(${cs(p)})`);
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]], add=(a,b)=>[a[0]+b[0],a[1]+b[1]], eqv=(a,b)=>a[0]===b[0]&&a[1]===b[1];
+const nz=(k)=>{let x;do x=R(-k,k);while(x===0);return x};
+const TOP={coord:'Координати вектора',mod:'Модуль вектора',eq:'Рівні вектори',end:'Початок і кінець вектора'};
+const LET=[['A','B'],['C','D'],['M','N'],['K','P'],['E','F'],['S','T']];
+
+/* ---------- малюнки ---------- */
+function arrowSvg(x1,y1,x2,y2,c){const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L,hx=x2-16*ux,hy=y2-16*uy,px=-uy*7,py=ux*7;
+ return `<line x1="${x1}" y1="${y1}" x2="${hx}" y2="${hy}" style="stroke:var(${c});stroke-width:4" stroke-linecap="round"/><path d="M${x2},${y2} L${hx+px},${hy+py} L${hx-px},${hy-py} z" style="fill:var(${c})"/><circle cx="${x1}" cy="${y1}" r="4" style="fill:var(${c})"/>`}
+function vlab(x,y,t,c){return `<text x="${x}" y="${y}" font-size="26" font-style="italic" font-family="Georgia,serif" text-anchor="middle" style="fill:var(${c})">${t}</text><line x1="${x-7}" y1="${y-24}" x2="${x+5}" y2="${y-24}" style="stroke:var(${c});stroke-width:2"/><path d="M${x+10},${y-24} L${x+3},${y-28} L${x+3},${y-20} z" style="fill:var(${c})"/>`}
+function grid(vs,W=12,H=6,c=34){const p=10,pt=34;const X=x=>p+x*c,Y=y=>pt+(H-y)*c;let s='';
+ for(let i=0;i<=W;i++)s+=`<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(H)}" style="stroke:var(--line);stroke-width:1"/>`;
+ for(let j=0;j<=H;j++)s+=`<line x1="${X(0)}" y1="${Y(j)}" x2="${X(W)}" y2="${Y(j)}" style="stroke:var(--line);stroke-width:1"/>`;
+ vs.forEach(([n,[x,y],[dx,dy],col])=>{s+=arrowSvg(X(x),Y(y),X(x+dx),Y(y+dy),col);
+  const L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;const sg=ny>=0?1:-1;s+=vlab(X(x+dx/2+nx*sg*.6),Y(y+dy/2+ny*sg*.6)+9,n,col)});
+ const w=W*c+2*p,h=H*c+p+pt;return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Вектор на клітинках">${s}</svg>`}
+
+/* ---------- запитання ---------- */
+/* варіанти: перший правильний; повтори прибираються, порядок перемішується */
+function choice(topic,q,opts,why,extra){const u=[];opts.forEach(o=>{if(!u.includes(o))u.push(o)});return Object.assign({type:'choice',topic,q,opts:u.slice(0,4),ans:0,why},extra||{})}
+function qCoordPts(){const[a,b]=pick(LET);const A=[R(-4,4),R(-4,4)];let v;do v=[nz(5),R(-5,5)];while(Math.abs(v[0])===Math.abs(v[1]));if(Math.random()<.5)v=[v[1],v[0]];const B=add(A,v),n=a+b;
+ return choice('coord',`Знайди координати вектора ${V(n)}, якщо ${PT(a,A)}, ${PT(b,B)}.`,[VC(n,v),VC(n,[-v[0],-v[1]]),VC(n,add(A,B)),VC(n,[v[1],v[0]]),VC(n,[v[0],-v[1]]),VC(n,[-v[0],v[1]])],
+  `Від координат кінця віднімаємо координати початку: ${M(`${nf(B[0])} − ${pn(A[0])} = ${nf(v[0])}`)}, ${M(`${nf(B[1])} − ${pn(A[1])} = ${nf(v[1])}`)}. Отже, ${VC(n,v)}.`)}
+function qCoordFig(){let v;do v=[nz(4),nz(3)];while(Math.abs(v[0])===Math.abs(v[1]));if(Math.random()<.3)v=Math.random()<.5?[0,nz(3)]:[nz(4),0];
+ const n=pick(['a','b','c','m']),W=8,H=5,x=v[0]>=0?R(1,W-1-v[0]):R(1-v[0],W-1),y=v[1]>=0?R(0,H-v[1]):R(-v[1],H);
+ const r=Math.abs(v[0])?`на ${Math.abs(v[0])} ${Math.abs(v[0])===1?'клітинку':Math.abs(v[0])<5?'клітинки':'клітинок'} ${v[0]>0?'вправо':'вліво'}`:'',u=Math.abs(v[1])?`на ${Math.abs(v[1])} ${Math.abs(v[1])===1?'клітинку':Math.abs(v[1])<5?'клітинки':'клітинок'} ${v[1]>0?'вгору':'вниз'}`:'';
+ return choice('coord',`Які координати вектора ${V(n)} на малюнку? (сторона клітинки — 1)`,[VC(n,v),VC(n,[v[1],v[0]]),VC(n,[-v[0],-v[1]]),VC(n,[v[0],-v[1]]),VC(n,[-v[0],v[1]]),VC(n,[v[0]+1,v[1]])],
+  `Від початку до кінця вектора: ${[r,u].filter(Boolean).join(' і ')}. Отже, ${VC(n,v)}.`,{fig:grid([[n,[x,y],v,'--acc']],W,H)})}
+const PY=[[3,4,5],[6,8,10],[5,12,13],[8,6,10],[4,3,5],[12,5,13],[0,7,7],[9,12,15]];
+function qMod(){const[p,q,r]=pick(PY);const x=p*(Math.random()<.5?-1:1),y=q*(Math.random()<.5?-1:1),n=pick(['a','b','c']);
+ return choice('mod',`Знайди модуль вектора ${VC(n,[x,y])}.`,[r,p+q,p*p+q*q,Math.abs(p-q),r*r,r+2].map(String).filter((x,i,a)=>a.indexOf(x)===i).slice(0,4),
+  `${M(`${AB(n)} = ${rt(`${pn(x)}² + ${pn(y)}²`)} = ${rt(String(p*p+q*q))} = ${r}`)}.`)}
+function qFormula(){return choice('mod',`За якою формулою знаходять модуль вектора ${M(`${V('a')}(${I('x')}; ${I('y')})`)}?`,
+ [M(`${AB('a')} = ${rt(`${I('x')}² + ${I('y')}²`)}`),M(`${AB('a')} = ${I('x')} + ${I('y')}`),M(`${AB('a')} = ${I('x')}² + ${I('y')}²`),M(`${AB('a')} = ${rt(`${I('x')} + ${I('y')}`)}`)],
+ 'Координати — катети прямокутного трикутника, а модуль — його гіпотенуза (теорема Піфагора).')}
+function qModCmp(){let a,b,A,B;do{a=[nz(5),nz(5)];b=Math.random()<.3?[a[1]*(Math.random()<.5?-1:1),a[0]]:[nz(5),nz(5)];A=a[0]**2+a[1]**2;B=b[0]**2+b[1]**2}while(eqv(a,b)||(A!==B&&Math.abs(A-B)>12));
+ const k=A>B?0:A<B?1:2,why=`Порівняємо квадрати модулів: ${M(`${AB('a')}² = ${pn(a[0])}² + ${pn(a[1])}² = ${A}`)}, ${M(`${AB('b')}² = ${pn(b[0])}² + ${pn(b[1])}² = ${B}`)}. `+(k===2?'Квадрати рівні, отже, модулі рівні.':`${M(`${Math.max(A,B)} > ${Math.min(A,B)}`)}, отже, більший модуль у вектора ${V(k?'b':'a')}.`);
+ return{type:'choice',fixed:1,topic:'mod',q:`У якого вектора більший модуль: ${VC('a',a)} чи ${VC('b',b)}?`,opts:[`у вектора ${V('a')}`,`у вектора ${V('b')}`,'модулі рівні'],ans:k,why}}
+function qEqXY(){const p=nz(6),q=nz(6);const[n1,n2]=pick([['a','b'],['m','n'],['c','d']]);
+ return choice('eq',`${M(`${V(n1)}(${I('x')}; ${nf(q)}) = ${V(n2)}(${nf(p)}; ${I('y')})`)}. Знайди ${I('x')} і ${I('y')}.`,
+  [M(`${I('x')} = ${nf(p)}, ${I('y')} = ${nf(q)}`),M(`${I('x')} = ${nf(q)}, ${I('y')} = ${nf(p)}`),M(`${I('x')} = ${nf(-p)}, ${I('y')} = ${nf(-q)}`),M(`${I('x')} = ${nf(p)}, ${I('y')} = ${nf(-q)}`)],
+  `У рівних векторів рівні відповідні координати: ${M(`${I('x')} = ${nf(p)}`)}, ${M(`${I('y')} = ${nf(q)}`)}.`)}
+function qEqPts(){const v=[nz(4),nz(4)],same=Math.random()<.5,w=same?v:pick([[v[0],-v[1]],[-v[0],v[1]],[v[1],v[0]]].filter(x=>!eqv(x,v)));
+ const A=[R(-4,3),R(-4,3)],C=[R(-4,3),R(-4,3)],B=add(A,v),D=add(C,w);
+ return{type:'choice',two:1,fixed:1,topic:'eq',q:`${PT('A',A)}, ${PT('B',B)}, ${PT('C',C)}, ${PT('D',D)}. Чи рівні вектори ${V('AB')} і ${V('CD')}?`,opts:['Так','Ні'],ans:same?0:1,
+  why:`${VC('AB',v)}, ${VC('CD',w)}. `+(same?'Відповідні координати рівні, отже, вектори рівні.':'Відповідні координати не рівні, отже, вектори не рівні.')}}
+function qEnd(){const v=[nz(4),nz(4)],A=[R(-4,4),R(-4,4)],B=add(A,v),n=pick(['a','b','m']);
+ return choice('end',`Вектор ${VC(n,v)} відклали від точки ${PT('A',A)}. Знайди координати його кінця ${I('B')}.`,[PT('B',B),PT('B',sub(A,v)),PT('B',sub(v,A)),PT('B',add(A,[v[1],v[0]])),PT('B',[A[0]+v[0],A[1]-v[1]]),PT('B',[A[0]-v[0],A[1]+v[1]])],
+  `Нехай ${PT('B',[I('x'),I('y')])}. Тоді ${M(`${I('x')} − ${pn(A[0])} = ${nf(v[0])}`)}, ${M(`${I('y')} − ${pn(A[1])} = ${nf(v[1])}`)}, звідси ${M(`${I('x')} = ${nf(B[0])}`)}, ${M(`${I('y')} = ${nf(B[1])}`)}.`)}
+function qStart(){const v=[nz(4),nz(4)],B=[R(-4,4),R(-4,4)],A=sub(B,v),n=pick(['a','b','m']);
+ return choice('end',`Точка ${PT('B',B)} — кінець вектора ${VC(n,v)}. Знайди координати його початку ${I('A')}.`,[PT('A',A),PT('A',add(B,v)),PT('A',sub(v,B)),PT('A',[B[0]-v[1],B[1]-v[0]]),PT('A',[B[0]-v[0],B[1]+v[1]]),PT('A',[B[0]+v[0],B[1]-v[1]])],
+  `Нехай ${PT('A',[I('x'),I('y')])}. Тоді ${M(`${nf(B[0])} − ${I('x')} = ${nf(v[0])}`)}, ${M(`${nf(B[1])} − ${I('y')} = ${nf(v[1])}`)}, звідси ${M(`${I('x')} = ${nf(A[0])}`)}, ${M(`${I('y')} = ${nf(A[1])}`)}.`)}
+const GAPS=[
+ ['coord','Координати вектора з початком A(x₁; y₁) і кінцем B(x₂; y₂): x = {x₂ − x₁|x₁ − x₂|x₁ + x₂}, y = {y₂ − y₁|y₁ − y₂|y₁ + y₂}.','Від координат кінця віднімаємо координати початку: x = x₂ − x₁, y = y₂ − y₁.'],
+ ['coord','Нульовий вектор має координати {(0; 0)|(1; 1)|(0; 1)}.','У нульового вектора початок і кінець збігаються, тому обидві координати дорівнюють 0.'],
+ ['coord','Якщо вектор відкласти від початку координат, то координати його кінця {дорівнюють координатам вектора|протилежні координатам вектора|дорівнюють нулю}.','Початок O(0; 0), тому x − 0 = x, y − 0 = y: координати кінця дорівнюють координатам вектора.'],
+ ['eq','Рівні вектори мають {рівні відповідні координати|протилежні координати|рівні суми координат}.','Теорема: рівні вектори мають рівні відповідні координати. І навпаки.'],
+ ['end','Щоб знайти координати кінця вектора, до координат його початку {додають|віднімають від них} координати вектора.','x₂ − x₁ = x, тому x₂ = x₁ + x: до координат початку додають координати вектора.']];
+function qGap(g){return{type:'gap',topic:g[0],q:'Вибери слово, щоб твердження стало правильним.',text:g[1],why:g[2]}}
+const TF=[
+ ['coord',`Координати вектора залежать від того, від якої точки його відкладено.`,0,'рівні вектори мають рівні координати, тому від точки, від якої відкладено вектор, координати не залежать.'],
+ ['coord',`Якщо ${M(`${V('AB')}(${I('x')}; ${I('y')})`)}, то ${M(`${V('BA')}(−${I('x')}; −${I('y')})`)}.`,1,''],
+ ['coord',`Якщо вектор паралельний осі ${I('y')} і напрямлений униз, то його перша координата від’ємна.`,0,'його перша координата дорівнює 0, а від’ємна — друга.'],
+ ['mod',`Модуль вектора може бути від’ємним, якщо його координати від’ємні.`,0,'модуль — це довжина, вона не буває від’ємною.'],
+ ['mod',`${M(`${AB('AB')} = ${I('AB')}`)}: модуль вектора дорівнює відстані між його початком і кінцем.`,1,''],
+ ['mod',`Вектори з рівними модулями мають рівні координати.`,0,`наприклад, ${VC('a',[3,4])} і ${VC('b',[4,3])}: модулі рівні, а координати — ні.`],
+ ['mod',`Вектори ${VC('a',[3,-4])} і ${VC('b',[-3,4])} мають рівні модулі.`,1,''],
+ ['eq',`Якщо ${M(`${V('a')}(${I('x')}₁; ${I('y')}₁) = ${V('b')}(${I('x')}₂; ${I('y')}₂)`)}, то ${M(`${I('x')}₁ = ${I('x')}₂`)} і ${M(`${I('y')}₁ = ${I('y')}₂`)}.`,1,''],
+ ['eq',`Вектори ${VC('a',[2,5])} і ${VC('b',[5,2])} рівні.`,0,'відповідні координати не рівні: 2 ≠ 5.'],
+ ['eq',`Вектори ${VC('a',[1,-3])} і ${VC('b',[-1,3])} рівні.`,0,'відповідні координати не рівні: 1 ≠ −1. Модулі рівні, але вектори протилежно напрямлені.']];
+function qTF(t){return{type:'choice',two:1,fixed:1,topic:t[0],q:t[1],opts:['Правда','Неправда'],ans:t[2]?0:1,why:t[2]?'Це правда.':'Неправда: '+t[3]}}
+const SYM=[[M(`${I('x')}₂ − ${I('x')}₁`),'перша координата вектора'],[M(`${I('y')}₂ − ${I('y')}₁`),'друга координата вектора'],[M(rt(`${I('x')}² + ${I('y')}²`)),'модуль вектора'],[M(`${V('0')}(0; 0)`),'нульовий вектор']];
+function qMatch(){return{type:'match',topic:'coord',q:`Що означає кожен запис для вектора ${M(`${V('AB')}(${I('x')}; ${I('y')})`)}, якщо ${M(`${I('A')}(${I('x')}₁; ${I('y')}₁)`)}, ${M(`${I('B')}(${I('x')}₂; ${I('y')}₂)`)}?`,rows:shuffle(SYM),why:'x₂ − x₁ і y₂ − y₁ — координати вектора, корінь із x² + y² — модуль, (0; 0) — координати нульового вектора.'}}
+
+function build(){
+ const tf=t=>qTF(pick(TF.filter(x=>x[0]===t)));
+ const list=[qGap(GAPS[0]),qCoordPts(),qCoordFig(),tf('coord'),qFormula(),qMod(),qModCmp(),tf('mod'),qMatch(),qEqXY(),qEqPts(),tf('eq'),qEnd(),qStart(),qGap(pick(GAPS.slice(1)))];
+ return list.map(q=>{if(q.type==='choice'&&!q.fixed&&q.opts.length>2){const s=shuffle(q.opts.map((t,i)=>({t,i})));q.opts=s.map(x=>x.t);q.ans=s.findIndex(x=>x.i===q.ans)}return q})}
+
+/* ---------- рушій ---------- */
+let Q=[],cur=0,res=[],t0=0,tick=null,who={name:'',cls:''};
+const main=document.getElementById('main'),bar=document.getElementById('bar'),timer=document.getElementById('timer');
+const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function intro(){clearInterval(tick);timer.textContent='0:00';bar.innerHTML='';
+ main.innerHTML=`<div class="q"><div class="qt">Напиши своє ім’я, щоб учитель отримав твій результат.</div>
+ <div class="who"><label>Прізвище та ім’я<input id="nm" autocomplete="name" placeholder="Коваленко Олена" value="${esc(who.name)}"></label><label>Клас<input id="cl" maxlength="6" placeholder="9-А" value="${esc(who.cls)}"></label></div>
+ <div class="actions"><button class="btn" id="go">Почати бліц</button></div></div>`;
+ const nm=document.getElementById('nm');nm.oninput=()=>nm.classList.remove('wrong');
+ document.getElementById('go').onclick=()=>{const n=nm.value.trim().replace(/\s+/g,' ');if(n.length<3){nm.classList.add('wrong');nm.focus();return}
+  who={name:n,cls:document.getElementById('cl').value.trim().toUpperCase().replace(/\s+/g,'')};start()}}
+function start(){Q=build();cur=0;res=Q.map(()=>null);t0=Date.now();clearInterval(tick);tick=setInterval(()=>timer.textContent=fmt(Math.floor((Date.now()-t0)/1000)),1000);timer.textContent='0:00';show()}
+function drawBar(){bar.innerHTML=Q.map((_,i)=>`<span class="${res[i]===true?'ok':res[i]===false?'bad':i===cur?'cur':''}"></span>`).join('')}
+const gapHtml=t=>t;
+function show(){drawBar();const q=Q[cur];let body='';
+ if(q.type==='choice')body=`<div class="opts${q.two?' two':''}">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}</div>`;
+ if(q.type==='gap'){let n=0;body=`<div class="calc"><div class="row" style="display:block;line-height:2.2">${gapHtml(q.text).replace(/\{([^}]+)\}/g,(m,o)=>{const a=o.split('|');return `<select id="sel${cur}_${n++}" data-a="${a[0]}"><option value="">вибери…</option>${shuffle(a).map(x=>`<option>${x}</option>`).join('')}</select>`})}</div></div>`}
+ if(q.type==='match'){const opts=SYM.map(s=>s[1]);body=`<div class="calc">${q.rows.map((r,i)=>`<div class="row"><b style="font-family:var(--math);font-size:22px;min-width:96px;display:inline-block">${r[0]}</b> — <select id="sel${cur}_${i}" data-a="${r[1]}"><option value="">вибери…</option>${opts.map(k=>`<option>${k}</option>`).join('')}</select></div>`).join('')}</div>`}
+ main.innerHTML=`<div class="q"><div class="qn">Запитання ${cur+1} з ${Q.length} · ${TOP[q.topic]}</div><div class="qt">${q.q}</div>${q.fig?`<div class="fig">${q.fig}</div>`:''}${body}<div id="fb"></div><div class="actions"><button class="btn" id="go" disabled>Перевірити</button></div></div>`;
+ const go=document.getElementById('go');let sel=null;
+ main.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(res[cur]!==null)return;const i=+b.dataset.i;
+  main.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=i;go.disabled=false});
+ const sels=[...main.querySelectorAll('select')];
+ sels.forEach(x=>x.onchange=()=>{go.disabled=sels.some(y=>!y.value)});
+ go.onclick=()=>{if(res[cur]===null){let ok;
+   if(q.type==='choice'){ok=sel===q.ans;q.pick=q.opts[sel];main.querySelectorAll('.opt').forEach((x,i)=>{if(i===q.ans)x.classList.add('right');else if(i===sel)x.classList.add('wrong')})}
+   if(sels.length){ok=true;q.pick=sels.map(x=>x.value).join(' / ');sels.forEach(x=>{const r=x.value===x.dataset.a;x.classList.add(r?'right':'wrong');x.disabled=true;if(!r)ok=false})}
+   res[cur]=ok;drawBar();
+   document.getElementById('fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><b>${ok?'Правильно!':'Помилка.'}</b>${q.why}</div>`;
+   go.textContent=cur<Q.length-1?'Далі':'Мій результат';go.focus()}
+  else{cur++;if(cur<Q.length)show();else finish()}}}
+
+/* текст для листа: без розмітки, назви векторів зі стрілкою */
+const plain=h=>{const d=document.createElement('div');d.innerHTML=h.replace(/<span class="vc">([^<]*)<\/span>/g,'вектор $1').replace(/<span class="rt"><span>(.*?)<\/span><\/span>/g,'√($1)');return d.textContent.replace(/\s+/g,' ').trim()};
+let last=null;
+function finish(){clearInterval(tick);drawBar();const sec=Math.floor((Date.now()-t0)/1000);const n=res.filter(x=>x).length,t=Q.length;const pts=Math.max(1,Math.round(n/t*12));
+ const lv=pts>=10?'високий':pts>=7?'достатній':pts>=4?'середній':'початковий';
+ const lvl=pts>=10?'Високий рівень: тему розумієш.':pts>=7?'Достатній рівень: повтори окремі пункти.':pts>=4?'Середній рівень: варто ще раз переглянути мініконспект.':'Початковий рівень: перечитай мініконспект і спробуй ще раз.';
+ const stat=Object.keys(TOP).map(k=>{const idx=Q.map((q,i)=>q.topic===k?i:-1).filter(i=>i>=0);return [k,idx.filter(i=>res[i]).length,idx.length]});
+ const tops=stat.map(([k,ok,all])=>{const p=all?ok/all:1;
+  return `<div class="tp"><span>${TOP[k]}</span><b>${ok} з ${all}</b><div class="meter"><span class="${p>=.75?'':p>=.5?'mid':'low'}" style="width:${Math.max(4,p*100)}%"></span></div></div>`}).join('');
+ const qtext=q=>q.type==='gap'?q.text.replace(/\{([^|}]+)[^}]*\}/g,'<b>$1</b>'):q.q;
+ const wrong=Q.map((q,i)=>res[i]?'':`<div>${i+1}. ${qtext(q)}<br><i>${q.why}</i></div>`).join('');
+ const now=new Date(),dt=now.toLocaleDateString('uk-UA')+', '+now.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+ main.innerHTML=`<div class="q result"><div class="qn">${esc(who.name)}${who.cls?', '+esc(who.cls):''} · час ${fmt(sec)}</div><div class="big">${n} з ${t}</div><div class="grade">${lvl}</div><div class="hint">Це приблизно ${pts} балів із 12.</div>
+ <div class="topics"><div style="font-weight:700">За темами:</div>${tops}</div>
+ ${wrong?`<div class="review"><div style="border:none;background:none;padding:0;font-weight:700">Над чим попрацювати:</div>${wrong}</div>`:''}
+ <div class="send"><div class="st" id="st"></div><div class="actions"><button class="btn ghost" id="mail">Надіслати вчителю листом</button></div></div>
+ <div class="actions"><button class="btn" id="again">Пройти ще раз (нові запитання)</button></div></div>`;
+ const weak=stat.filter(s=>s[1]<s[2]).map(s=>`${TOP[s[0]]} (${s[1]} з ${s[2]})`).join(', ')||'немає';
+ const ans=Q.map((q,i)=>`${i+1}) ${res[i]?'✓':'✗'} ${plain(qtext(q))} — відповідь учня: ${plain(q.pick||'')}`).join('\n');
+ last={id:now.getTime()+'-'+Math.random().toString(36).slice(2,6),name:who.name,cls:who.cls,score:`${n} з ${t}`,pts:`${pts} з 12`,level:lv,time:fmt(sec),date:dt,weak,ans};
+ document.getElementById('again').onclick=intro;
+ document.getElementById('mail').onclick=()=>{location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent(subj(last))+'&body='+encodeURIComponent(txt(last))};
+ report(last)}
+
+/* ---------- автонадсилання результату на пошту вчителя (з чергою, якщо немає інтернету) ---------- */
+const subj=r=>`${WORK}: ${r.name}${r.cls?', '+r.cls:''} — ${r.pts} балів`;
+const txt=r=>`${r.name}${r.cls?', '+r.cls:''}\n${WORK}\nПравильно: ${r.score}, оцінка ${r.pts} (рівень: ${r.level})\nНад чим попрацювати: ${r.weak}\nЧас: ${r.time} · ${r.date}\n\n${r.ans}`;
+const QK='vk-blitz-m3-queue';
+const qGet=()=>{try{return JSON.parse(localStorage.getItem(QK)||'[]')}catch(e){return []}};
+const qSet=a=>{try{localStorage.setItem(QK,JSON.stringify(a))}catch(e){}};
+const qDel=r=>qSet(qGet().filter(x=>x.id!==r.id));
+function post(r){
+ return fetch('https://formsubmit.co/ajax/'+EMAIL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+  body:JSON.stringify({_subject:subj(r),_template:'table',_captcha:'false','Учень':r.name,'Клас':r.cls||'—','Робота':WORK,'Правильно':r.score,'Оцінка':r.pts,'Рівень':r.level,'Над чим попрацювати':r.weak,'Час':r.time,'Дата':r.date,'Відповіді':r.ans})})
+  .then(x=>x.json()).then(j=>{if(String(j.success)!=='true')throw new Error(j.message||'не надіслано');return j})}
+function st(c,t){const e=document.getElementById('st');if(e){e.className='st '+c;e.textContent=t}}
+function report(r){qSet(qGet().filter(x=>x.id!==r.id).concat([r]));
+ if(navigator.onLine===false){st('wait','Немає інтернету. Результат збережено: він надішлеться сам, коли з’явиться зв’язок і ти знову відкриєш бліц.');return}
+ st('wait','Надсилаю результат учителю…');
+ post(r).then(()=>{qDel(r);st('ok','✓ Результат автоматично надіслано вчителю на пошту.')})
+  .catch(()=>st('wait','Автоматично надіслати не вдалося. Результат збережено і надішлеться пізніше. Можеш також натиснути «Надіслати вчителю листом».'))}
+function flush(){if(navigator.onLine===false)return;qGet().forEach(r=>{if(last&&r.id===last.id)return;post(r).then(()=>qDel(r)).catch(()=>{})})}
+window.addEventListener('online',()=>{flush();if(last&&qGet().some(x=>x.id===last.id))post(last).then(()=>{qDel(last);st('ok','✓ Результат автоматично надіслано вчителю на пошту.')}).catch(()=>{})});
+flush();
+intro();
+</script>
+
+</body></html>

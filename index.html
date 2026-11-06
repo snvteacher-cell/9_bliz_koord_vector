@@ -2,7 +2,7 @@
 <title>Бліц: координати вектора</title>
 <meta name="author" content="Сидорчук Н.В.">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600;700;800&display=swap">
+
 <style>
 /* Один стовпчик-«зошит»: питання по одному, прогрес угорі, малюнок над варіантами */
 :root{
@@ -106,7 +106,7 @@ input.num.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--b
 </header>
 <div class="bar" id="bar"></div>
 <div id="main"></div>
-<div class="copy">© Сидорчук Н.В., 2026</div>
+<div class="copy">© Сидорчук Н.В.</div>
 </div>
 
 <script>
@@ -283,5 +283,107 @@ window.addEventListener('online',()=>{flush();if(last&&qGet().some(x=>x.id===las
 flush();
 intro();
 </script>
+
+
+<style>
+/* Візуальне оформлення: геометричний зошит */
+:root{
+  --bg:#edf5ff; --card:#ffffff; --ink:#183153; --muted:#627895; --line:#cbdcf0;
+  --acc:#245bb8; --acc-soft:#e8f0ff; --ok:#168456; --ok-soft:#e3f6ec;
+  --bad:#c94343; --bad-soft:#fff0ee; --fig:#f7fbff;
+  --m1:#c94343; --m2:#d9771c; --m3:#168456;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(rgba(70,123,190,.075) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(70,123,190,.075) 1px,transparent 1px),
+                   radial-gradient(ellipse at 50% -12%,#ffffff 0%,#edf5ff 66%);
+  background-size:24px 24px,24px 24px,100% 620px;
+  color:var(--ink);font-family:var(--font);font-size:17px;
+  padding-top:max(18px,env(safe-area-inset-top,0px));
+  padding-bottom:max(28px,env(safe-area-inset-bottom,0px));
+}
+.wrap{max-width:760px;gap:18px}
+header{
+  position:relative;overflow:hidden;padding:22px 24px 20px;
+  border:1px solid #c5d9f4;border-radius:22px;
+  background:linear-gradient(135deg,#173e79 0%,#245bb8 62%,#397bd0 100%);
+  color:#fff;box-shadow:0 12px 28px rgba(31,75,137,.18);
+}
+header:after{
+  content:"";position:absolute;right:20px;top:22px;width:86px;height:54px;opacity:.24;
+  background:linear-gradient(30deg,transparent 48%,#fff 49%,#fff 51%,transparent 52%),
+             linear-gradient(150deg,transparent 48%,#fff 49%,#fff 51%,transparent 52%);
+  pointer-events:none;
+}
+.eyebrow{color:#dceaff;font-size:12px;letter-spacing:.11em}
+h1{max-width:560px;font-size:clamp(26px,5vw,36px);line-height:1.12;margin:5px 0 8px}
+header .hint{color:#e3eeff;max-width:620px;font-size:15px;line-height:1.5}
+.timer{background:#fff1c9;color:#81520a;border:1px solid #f5d78d;border-radius:999px;padding:6px 14px}
+.bar{gap:5px;padding:0 2px}
+.bar span{height:9px;border-radius:99px;background:#cbd9eb}
+.bar span.ok{background:#24a66f}.bar span.bad{background:#e36a61}.bar span.cur{background:#397bd0}
+.q{
+  border:1px solid #cbdcf0;border-radius:20px;padding:clamp(18px,4vw,26px);
+  box-shadow:0 9px 24px rgba(40,79,129,.09);gap:16px;
+}
+.qn{display:inline-flex;align-self:flex-start;background:#eaf1ff;color:#245bb8;
+  border-radius:999px;padding:5px 11px;font-size:13px;font-weight:750}
+.qt{font-size:clamp(19px,3vw,23px);line-height:1.42;color:#183153}
+.fig{border:1px solid #d8e5f5;background-color:#f8fbff;
+  background-image:linear-gradient(rgba(72,128,192,.10) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(72,128,192,.10) 1px,transparent 1px);
+  background-size:22px 22px;border-radius:16px;padding:12px;overflow:hidden}
+.fig svg{max-width:100%;height:auto}
+.opt{
+  border:1.7px solid #cbd9eb;border-radius:14px;padding:13px 15px;
+  background:linear-gradient(180deg,#fff,#f9fbff);font-size:17px;
+  box-shadow:0 2px 0 rgba(36,91,184,.04);transition:border-color .15s,background .15s,transform .15s;
+}
+.opt:hover{border-color:#6b96d7;transform:translateY(-1px)}
+.opt.sel{border-color:#397bd0;background:#eaf1ff}
+.opt.right{border-color:#168456;background:#e3f6ec}
+.opt.wrong{border-color:#c94343;background:#fff0ee}
+.opt .box{border-radius:7px;background:#f4f7fc}
+.btn{
+  border-radius:13px;padding:13px 22px;font-size:17px;
+  background:linear-gradient(135deg,#245bb8,#397bd0);
+  box-shadow:0 5px 0 #19468f,0 8px 16px rgba(36,91,184,.16);
+}
+.btn:active{transform:translateY(2px);box-shadow:0 3px 0 #19468f}
+.btn.ghost{background:#fff;color:#245bb8;border:1.7px solid #9db8df;box-shadow:none}
+.btn[disabled]{box-shadow:none}
+input.num,select,.who input{border-color:#bfd1e8;border-radius:11px}
+input.num:focus,select:focus,.who input:focus{outline:3px solid #d9e7ff;border-color:#397bd0}
+.fb{border-radius:14px}
+.fb.ok{border:1px solid #b7e5cb}.fb.bad{border:1px solid #f0c2bc}
+.send{background:#f8fbff;border-color:#d5e2f2;border-radius:14px}
+.copy{
+  text-align:center;color:#637d9e;font-size:13px;font-weight:650;
+  letter-spacing:.04em;padding:8px 0 2px;margin-top:0
+}
+.big{font-size:clamp(48px,12vw,64px)}
+.review div{border-radius:0 12px 12px 0}
+@media(max-width:520px){
+  body{font-size:16px;padding-left:12px;padding-right:12px;padding-top:12px}
+  .wrap{gap:13px}
+  header{padding:18px 17px;border-radius:18px}
+  header:after{right:12px;top:16px;width:52px;height:36px}
+  .q{padding:16px;border-radius:17px;gap:13px}
+  .opt{font-size:16px;padding:12px}
+  .btn{width:100%;min-height:48px}
+  .actions{display:grid;grid-template-columns:1fr;width:100%}
+  .fig{padding:7px}
+  .fig svg{max-height:250px}
+  .calc{font-size:17px}
+  .calc .row{gap:6px}
+  select{font-size:16px;max-width:100%}
+  input.num{width:84px;font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
 
 </body></html>
